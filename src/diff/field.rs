@@ -18,7 +18,11 @@ pub struct Field {
 
 impl Diff for Field {
     fn diff<'a>(&'a self, other: &'a Self) -> DiffResult<'a, Self> {
-        if self.value == other.value {
+        // Windows inserts different newline chars in notes than Linux and MacOS. Ignore those to
+        // focus on real differences
+        let own_normalized_value = self.value.replace("\r\n", "\n");
+        let other_normalized_value = other.value.replace("\r\n", "\n");
+        if own_normalized_value == other_normalized_value {
             DiffResult::Identical {
                 left: self,
                 right: other,
